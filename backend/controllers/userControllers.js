@@ -1,5 +1,11 @@
 import User from "../models/userSchema.js";
 import jwt from "jsonwebtoken";
+import pdf from "pdf-parse";
+import dotenv from "dotenv";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+dotenv.config();
+
+const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export async function getUser(req, res) {
   const { email } = req.body;
@@ -111,5 +117,45 @@ export async function profile(req, res) {
   } catch (error) {
     console.error("Profile error:", error);
     res.status(500).json({ message: "Server error" });
+  }
+}
+
+export function fileFilter(req, file, cb) {
+  if (file.mimetype === "application/pdf") {
+    cb(null, true);
+  } else {
+    cb(new Error("Only PDF files are allowed"));
+  }
+}
+export async function fileUpload(req, res) {
+  try {
+    const file = req.file.buffer;
+    const data = await pdf(file);
+
+    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const prompt = `
+    You are an expert career coach who helps candidates prepare for top product-based companies 
+    like Google, Amazon, Meta, and Microsoft. 
+
+    Read the following resume text and write a detailed paragraph of feedback. 
+    Your response should flow naturally like professional career advice, 
+    but it must cover these aspects 
+    overall impression, key strengths, weaknesses or gaps, ATS readiness, 
+    skills missing for FAANG-level roles, and practical improvements the candidate should make. 
+    End the paragraph with suggested areas to prepare for interviews. 
+
+    Here is the resume text:
+    ${data.text}
+    `;
+
+    const geminiRes = await model.generateContent(prompt);
+
+    res.status(200).json({ message: geminiRes.response.text() });
+  } catch (error) {
+    console.error("Upload error:", error);
+    res
+      .status(500)
+      .json({ message: "Failed to parse PDF", error: error.message });
   }
 }

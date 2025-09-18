@@ -17,8 +17,8 @@ type AuthContextType = {
     password: string;
   }) => Promise<void>;
   login: (params: { email: string; password: string }) => Promise<void>;
-  logout: () => void; // Remove or implement logout if needed
-  findUser: () => void; // Remove or implement logout if needed
+  logout: () => void;
+  findUser: () => void;
   isLoggedIn: boolean;
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   userEmail: string;
@@ -34,6 +34,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userEmail, setuserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("user");
 
+  // ✅ backend URL comes from env
+  const API = process.env.NEXT_PUBLIC_API_URL;
+
   async function signup({
     name,
     email,
@@ -44,7 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     password: string;
   }): Promise<void> {
     try {
-      const res = await fetch("http://localhost:5001/api/users/register", {
+      const res = await fetch(`${API}/api/users/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,7 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     password: string;
   }): Promise<void> {
     try {
-      const res = await fetch("http://localhost:5001/api/users/login", {
+      const res = await fetch(`${API}/api/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -103,6 +106,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   function logout() {
     localStorage.clear();
   }
+
   function checkLogin() {
     const token = localStorage.getItem("token");
     return !!token;
@@ -116,7 +120,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     try {
-      const res = await fetch("http://localhost:5001/api/users/profile", {
+      const res = await fetch(`${API}/api/users/profile`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -137,6 +141,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       router.push("/authentication");
     }
   }
+
   useEffect(() => {
     checkLogin();
     findUser();
@@ -161,7 +166,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// 3. Custom hook for easy usage
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used within AuthProvider");

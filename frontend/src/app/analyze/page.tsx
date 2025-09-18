@@ -15,6 +15,7 @@ const AnalyzePage = () => {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const { userEmail } = useAuth();
+  const API = process.env.NEXT_PUBLIC_API_URL;
 
   async function handleUpload() {
     if (!file) {
@@ -26,7 +27,7 @@ const AnalyzePage = () => {
     formData.append("email", JSON.stringify(userEmail));
     try {
       setIsLoading(true);
-      const res = await fetch("http://localhost:5001/api/users/analyze", {
+      const res = await fetch(`${API}/api/users/analyze`, {
         method: "POST",
         body: formData,
       });

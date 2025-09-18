@@ -1,6 +1,6 @@
 import User from "../models/userSchema.js";
 import jwt from "jsonwebtoken";
-import pdf from "pdf-parse";
+import "../node_modules/pdf-parse/index.js";
 import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 dotenv.config();

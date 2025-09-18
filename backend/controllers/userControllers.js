@@ -1,6 +1,6 @@
 import User from "../models/userSchema.js";
 import jwt from "jsonwebtoken";
-import pdf from "pdf-parse-debugging-disabled";
+// pdfjs-dist is no longer needed
 import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 dotenv.config();
@@ -127,10 +127,12 @@ export function fileFilter(req, file, cb) {
     cb(new Error("Only PDF files are allowed"));
   }
 }
+
 export async function fileUpload(req, res) {
   try {
-    const file = req.file.buffer;
-    const data = await pdf(file);
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded." });
+    }
 
     const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -138,24 +140,35 @@ export async function fileUpload(req, res) {
     You are an expert career coach who helps candidates prepare for top product-based companies 
     like Google, Amazon, Meta, and Microsoft. 
 
-    Read the following resume text and write a detailed paragraph of feedback. 
+    Analyze the attached resume PDF and write a detailed paragraph of feedback. 
     Your response should flow naturally like professional career advice, 
-    but it must cover these aspects 
+    but it must cover these aspects: 
     overall impression, key strengths, weaknesses or gaps, ATS readiness, 
     skills missing for FAANG-level roles, and practical improvements the candidate should make. 
-    End the paragraph with suggested areas to prepare for interviews. 
-
-    Here is the resume text:
-    ${data.text}
+    End the paragraph with suggested areas to prepare for interviews.
     `;
 
-    const geminiRes = await model.generateContent(prompt);
+    // Convert the buffer to a file part for the Gemini API
+    const filePart = {
+      inlineData: {
+        data: req.file.buffer.toString("base64"),
+        mimeType: req.file.mimetype,
+      },
+    };
 
-    res.status(200).json({ message: geminiRes.response.text() });
+    // Send the prompt and the file to the model
+    const result = await model.generateContent([prompt, filePart]);
+    const response = await result.response;
+    const text = response.text();
+
+    res.status(200).json({ message: text });
   } catch (error) {
     console.error("Upload error:", error);
     res
       .status(500)
-      .json({ message: "Failed to parse PDF", error: error.message });
+      .json({
+        message: "Failed to process file with AI",
+        error: error.message,
+      });
   }
 }

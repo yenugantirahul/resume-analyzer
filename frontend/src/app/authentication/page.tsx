@@ -25,58 +25,6 @@ const Page = () => {
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  // async function signup() {
-  //   try {
-  //     const res = await fetch("http://localhost:5001/api/users/register", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Accept: "application/json",
-  //       },
-  //       credentials: "include",
-  //       body: JSON.stringify({ name, email, password }),
-  //     });
-
-  //     const data = await res.json();
-
-  //     if (res.ok) {
-  //       localStorage.setItem("token", data.token);
-  //       router.push("/profile");
-  //     } else {
-  //       setError(data.message || "Registration failed");
-  //     }
-  //   } catch (error) {
-  //     console.error("Signup error:", error);
-  //     setError("An error occurred during signup");
-  //   }
-  // }
-
-  // async function login() {
-  //   try {
-  //     const res = await fetch("http://localhost:5001/api/users/login", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Accept: "application/json",
-  //       },
-  //       credentials: "include",
-  //       body: JSON.stringify({ email, password }),
-  //     });
-
-  //     const data = await res.json();
-
-  //     if (res.ok) {
-  //       localStorage.setItem("token", data.token);
-  //       router.push("/profile");
-  //     } else {
-  //       setError(data.message || "Login failed");
-  //     }
-  //   } catch (error) {
-  //     console.error("Login error:", error);
-  //     setError("An error occurred during login");
-  //   }
-  // }
-
   return (
     <div className="mx-auto flex items-center mt-[50px] justify-center lg:p-0 px-8">
       <Card className="w-full max-w-sm">

@@ -6,7 +6,7 @@ import cors from "cors";
 const app = express();
 app.use(
   cors({
-    origin: "https://resume-analyzer-project.vercel.app",
+    origin: "https://resume-analyzer-r3cx.vercel.app",
     credentials: true,
   })
 );

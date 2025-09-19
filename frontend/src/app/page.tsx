@@ -12,8 +12,8 @@ export default function Home() {
 
       {/* Stunning Quote / Tagline */}
       <p className="text-center text-xl text-gray-600 max-w-2xl italic">
-        "Transforming resumes into career-changing opportunities with smart AI
-        insights."
+        Transforming resumes into career-changing opportunities with smart AI
+        insights.
       </p>
 
       {/* Authenticated / Guest Section */}
@@ -25,7 +25,7 @@ export default function Home() {
         </div>
       ) : (
         <h2 className="font-semibold text-center text-3xl text-gray-700">
-          Login to unlock your resume’s full potential ✨
+          Login to unlock your resume&apos;s full potential ✨
         </h2>
       )}
     </div>
